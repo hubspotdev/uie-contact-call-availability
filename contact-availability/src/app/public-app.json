@@ -1,0 +1,30 @@
+{
+  "name": "Contact Global Availability",
+  "uid": "contact-global-availability",
+  "description": "A public app to view the global availability of a contact",
+  "allowedUrls": ["https://api.example.com"],
+  "auth": {
+    "redirectUrls": ["http://localhost:3000/oauth-callback"],
+    "requiredScopes": ["crm.objects.contacts.read", "crm.objects.contacts.write"],
+    "optionalScopes": [],
+    "conditionallyRequiredScopes": []
+  },
+  "support": {
+    "supportEmail": "support@example.com",
+    "documentationUrl": "https://example.com/docs",
+    "supportUrl": "https://example.com/support",
+    "supportPhone": "+18005555555"
+  },
+  "extensions": {
+    "crm": {
+      "cards": [
+        {
+          "file": "./extensions/example-card.json"
+        }
+      ]
+    }
+  },
+  "webhooks": {
+    "file": "./webhooks/webhooks.json"
+  }
+}
