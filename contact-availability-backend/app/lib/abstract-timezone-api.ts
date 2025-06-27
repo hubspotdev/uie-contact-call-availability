@@ -125,13 +125,19 @@ export class AbstractTimezoneAPI {
    * @returns Formatted time string
    */
   formatTime(response: AbstractTimezoneResponse): string {
-    const date = new Date(response.datetime);
+    // Parse the datetime field to get the correct local time
+    const [datePart, timePart] = response.datetime.split(' ');
+    const [hour, minute, second] = timePart.split(':').map(Number);
+
+    // Create a date object with the local time components
+    const date = new Date(2020, 0, 1, hour, minute, second);
+
+    // Format with AM/PM
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      timeZoneName: 'short',
-      timeZone: response.timezone_location
+      hour12: true
     });
   }
 

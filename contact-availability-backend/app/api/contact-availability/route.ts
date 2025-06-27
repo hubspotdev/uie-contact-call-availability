@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     const holidays = await nagerDateApi.getHolidaysForRange(countryCode);
 
     // Determine availability status
-    const availability = determineAvailabilityStatus(timezoneData, holidays);
+    const availability = determineAvailabilityStatus(timezoneData, holidays, timezoneApi);
 
     // Format the response
     const response: ContactAvailabilityResponse = {

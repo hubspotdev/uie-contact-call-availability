@@ -18,17 +18,35 @@ export interface ContactAvailabilityResponse {
 // Helper function to determine availability status
 export function determineAvailabilityStatus(
   timezoneData: AbstractTimezoneResponse,
-  holidays: PublicHoliday[]
+  holidays: PublicHoliday[],
+  timezoneApi: any
 ): { status: 'in office' | 'public holiday' | 'weekend' | 'off hours'; recommendation: string } {
-  const currentDate = new Date(timezoneData.datetime);
-  const currentHour = currentDate.getHours();
-  const currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  const currentDateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+  // Get the formatted date from the Abstract Timezone API
+  const formatted = timezoneApi.formatDateTimeSeparated(timezoneData);
+
+  // Parse the time from the datetime field (local time)
+  const [datePart, timePart] = timezoneData.datetime.split(' ');
+  const [hour, minute, second] = timePart.split(':').map(Number);
+
+  // Determine day of week from the formatted date string
+  // Format: "Friday, June 27, 2025"
+  const dayMatch = formatted.date.match(/^(\w+),/);
+  if (!dayMatch) {
+    throw new Error('Could not parse day from formatted date');
+  }
+
+  const dayName = dayMatch[1];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const currentDay = dayNames.indexOf(dayName);
+
+  // Use the date part directly from datetime field for holiday checking
+  const currentDateString = datePart; // Already in YYYY-MM-DD format
+
+  const currentHour = hour;
 
   // Helper function to get the next available weekday
-  function getNextAvailableWeekday(currentDate: Date, holidays: PublicHoliday[]): string {
+  function getNextAvailableWeekday(currentDay: number, currentDateString: string, holidays: PublicHoliday[]): string {
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    let nextDate = new Date(currentDate);
 
     // First, check if today is a weekday and before 9AM - if so, recommend today at 9AM
     if (currentDay >= 1 && currentDay <= 5 && currentHour < 9) {
@@ -38,22 +56,22 @@ export function determineAvailabilityStatus(
       }
     }
 
-    // Start checking from tomorrow
-    nextDate.setDate(nextDate.getDate() + 1);
+    // Calculate next available weekday
+    let nextDay = currentDay;
+    let daysAhead = 1;
 
-    // Check up to 7 days ahead to find the next available weekday
-    for (let i = 0; i < 7; i++) {
-      const nextDay = nextDate.getDay();
-      const nextDateString = nextDate.toISOString().split('T')[0];
+    while (daysAhead <= 7) {
+      nextDay = (currentDay + daysAhead) % 7;
 
-      // Check if it's a weekday (Monday-Friday) and not a holiday
       if (nextDay >= 1 && nextDay <= 5) {
-        const isHoliday = holidays.some(holiday => holiday.date === nextDateString);
+        // Calculate the date for this future day
+        const futureDate = new Date(currentDateString);
+        futureDate.setDate(futureDate.getDate() + daysAhead);
+        const futureDateString = futureDate.toISOString().split('T')[0];
+
+        const isHoliday = holidays.some(holiday => holiday.date === futureDateString);
         if (!isHoliday) {
-          // Check if it's tomorrow
-          const tomorrow = new Date(currentDate);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          if (nextDate.toDateString() === tomorrow.toDateString()) {
+          if (daysAhead === 1) {
             return 'Call tomorrow at 9AM';
           } else {
             return `Call ${dayNames[nextDay]} at 9AM`;
@@ -61,7 +79,7 @@ export function determineAvailabilityStatus(
         }
       }
 
-      nextDate.setDate(nextDate.getDate() + 1);
+      daysAhead++;
     }
 
     // Fallback
@@ -73,7 +91,7 @@ export function determineAvailabilityStatus(
   if (isHoliday) {
     return {
       status: 'public holiday',
-      recommendation: getNextAvailableWeekday(currentDate, holidays)
+      recommendation: getNextAvailableWeekday(currentDay, currentDateString, holidays)
     };
   }
 
@@ -81,7 +99,7 @@ export function determineAvailabilityStatus(
   if (currentDay === 0 || currentDay === 6) { // Sunday or Saturday
     return {
       status: 'weekend',
-      recommendation: getNextAvailableWeekday(currentDate, holidays)
+      recommendation: getNextAvailableWeekday(currentDay, currentDateString, holidays)
     };
   }
 
@@ -96,7 +114,7 @@ export function determineAvailabilityStatus(
   // If it's a weekday but outside office hours
   return {
     status: 'off hours',
-    recommendation: getNextAvailableWeekday(currentDate, holidays)
+    recommendation: getNextAvailableWeekday(currentDay, currentDateString, holidays)
   };
 }
 
