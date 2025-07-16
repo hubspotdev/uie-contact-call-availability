@@ -1,0 +1,16 @@
+{
+  "type": "crm-card",
+  "data": {
+    "title": "Global Contact Availability",
+    "uid": "global-contact-availability",
+    "location": "crm.record.tab",
+    "module": {
+      "file": "ContactAvailabilityCard.tsx"
+    },
+    "objectTypes": [
+      {
+        "name": "contacts"
+      }
+    ]
+  }
+}

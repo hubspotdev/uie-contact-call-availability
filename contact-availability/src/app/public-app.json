@@ -2,7 +2,7 @@
   "name": "Contact Global Availability",
   "uid": "contact-global-availability",
   "description": "A public app to view the global availability of a contact",
-  "allowedUrls": ["https://api.example.com"],
+  "allowedUrls": ["https://api.example.com", "https://uie-contact-call-availability-one.vercel.app/"],
   "auth": {
     "redirectUrls": ["http://localhost:3000/oauth-callback"],
     "requiredScopes": ["crm.objects.contacts.read", "crm.objects.contacts.write"],
@@ -20,6 +20,9 @@
       "cards": [
         {
           "file": "./extensions/example-card.json"
+        },
+        {
+          "file": "./extensions/contact-availability-card.json"
         }
       ]
     }
