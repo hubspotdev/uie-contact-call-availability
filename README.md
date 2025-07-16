@@ -13,7 +13,7 @@ This project is part of a multi-part tutorial series:
 
 ## 🎯 Project Overview
 
-<img width="684" alt="Global Contact Availability public app card built with HubSpot's UI Extensions" src="https://github.com/user-attachments/assets/7c496e11-ed53-49d2-8863-76b3e97a770b" />
+<img width="684" alt="Global Contact Availability public app card built with HubSpot's UI Extensions" src="https://github.com/user-attachments/assets/357b0010-461c-44fa-b4c6-ac8f38ddb734" />
 
 The **Contact Global Availability** app is a HubSpot Public App that creates a custom UI Extension card displaying:
 - Real-time local time for contacts
