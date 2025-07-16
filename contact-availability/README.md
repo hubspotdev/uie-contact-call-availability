@@ -51,8 +51,6 @@ The extension processes the API response and displays information in organized s
 
 ## Installation and Setup
 
-# UIE Public Apps: Getting Started
-
 ## Description
 
 This template provides a standardized introduction section for "Getting Started" with UIE public app samples. It offers a clear and concise set of instructions that can be easily embedded into the larger README files of your projects. This ensures consistency across documentation and saves developers time by eliminating the repetitive task of writing similar setup instructions.
